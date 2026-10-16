@@ -24,13 +24,23 @@ result = agent.run_sync(
 
 while isinstance(result.output, DeferredToolRequests):
     results = DeferredToolResults()
+    denied = False
     for call in result.output.approvals:
         print(f"\n[GATE] {call.tool_name}")
         print(json.dumps(call.args_as_dict(), indent=2))
         approved = input("\nApprove? (y/n): ").strip() == "y"
-        results.approvals[call.tool_call_id] = ToolApproved() if approved else ToolDenied("Not approved by user")
+        if approved:
+            results.approvals[call.tool_call_id] = ToolApproved()
+        else:
+            denied = True
+            results.approvals[call.tool_call_id] = ToolDenied("Not approved by user")
+
+    if denied:
+        print("\n[GATE] Write denied. Stopping.")
+        break
+
     result = agent.run_sync(
         "Continue", message_history=result.all_messages(), deferred_tool_results=results
     )
-
-print(result.output)
+else:
+    print(result.output)

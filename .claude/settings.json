@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh -T git@github.com)",
+      "Read(//Users/jennifer/.ssh/**)",
+      "Bash(ssh-add -l)",
+      "Bash(cat ~/.ssh/config)",
+      "Bash(ssh -T github-urbanengineer)"
+    ]
+  }
+}

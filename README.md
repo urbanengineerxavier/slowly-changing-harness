@@ -54,3 +54,18 @@ uv run python EP2_permission_gates/loop_permission_gates.py
 ```
 
 What you'll see: for the gated version, a `[GATE] write_to_sheet` block printing the exact rows about to be written, then a prompt waiting on your `y`/`n` before anything touches disk. Check `stock_research.csv` afterward — rows only appear for calls you approved.
+
+---
+
+## Episode 2b — The Loop, LangGraph (`EP2_permission_gates_langgraph/`)
+
+Same stock-research task as Episode 2, rebuilt on core LangGraph instead of pydantic-ai, no gating — just the bare agent loop as LangGraph's own primitives: a `StateGraph` with an `llm` node, LangGraph's prebuilt `ToolNode`, and `tools_condition` routing between them.
+
+- **`loop_without_permission_gates.py`** — `llm_node` calls the model; `tools_condition` sends control to `ToolNode` whenever the last message has tool calls, else to `END`; `ToolNode` runs every tool call it's handed, `write_to_sheet` included, and loops back to `llm`.
+
+Run:
+```bash
+uv run python EP2_permission_gates_langgraph/loop_without_permission_gates.py
+```
+
+What you'll see: the agent's final summary, and new rows appended to `stock_research.csv`.
